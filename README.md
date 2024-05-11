@@ -1,6 +1,7 @@
 Ảnh demo:
 ![alt text](image.png)  
 Các phím bấm:
+
 l : Tắt bật đèn phòng   
 
 f : Bật tắt quạt trần  
