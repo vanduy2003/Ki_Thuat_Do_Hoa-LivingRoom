@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Đinh Văn Duy</title>
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+                cursor: pointer;
+            }
+            canvas {
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <script>
+            // Khởi tạo scene, camera và renderer
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(
+                80,
+                window.innerWidth / window.innerHeight, // Aspect ratio
+                0.5,
+                1000
+            );
+
+            // Thay đổi chiều rộng của căn phòng bằng cách thay đổi tỷ lệ khung hình
+            camera.aspect = 25 / 23; // newAspectRatio là tỷ lệ mong muốn
+            camera.updateProjectionMatrix(); // Cần gọi hàm này sau khi thay đổi aspect
+
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Đặt camera
+            camera.position.set(0, 0, 10);
+
+            // Tạo phòng
+            const roomGeometry = new THREE.BoxGeometry(9.5, 9, 9.5);
+            const roomMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffc0cb, // Màu cam
+                side: THREE.BackSide,
+            });
+            const room = new THREE.Mesh(roomGeometry, roomMaterial);
+            scene.add(room);
+
+            // Tạo ánh sáng
+            const ambientLight = new THREE.AmbientLight(0xffc0cb, 0.7); // Ánh sáng môi trường
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3); // Ánh sáng hướng
+            directionalLight.position.set(0, 1, 3).normalize();
+            scene.add(directionalLight);
+
+            // Tạo phòng khách
+            const bedroomGeometry = new THREE.BoxGeometry(9, 8, 9);
+            const bedroomMaterial = new THREE.MeshPhongMaterial({
+                color: 0xfffff, // Màu xanh dương
+                side: THREE.BackSide,
+            });
+            const bedroom = new THREE.Mesh(bedroomGeometry, bedroomMaterial);
+            bedroom.position.set(0, 0, 0);
+            scene.add(bedroom);
+
+            // Tạo ti vi
+            const windowFrameGeometry = new THREE.BoxGeometry(3, 3.5, 0.1);
+            // Màu bên trong đen
+            const windowInnerMaterial = new THREE.MeshPhongMaterial({
+                color: 0x000000, // Màu đen
+            });
+            const windowFrame2 = new THREE.Mesh(
+                windowFrameGeometry,
+                windowInnerMaterial
+            );
+            windowFrame2.position.set(0, 0.2, -4.2); // Đặt vị trí, điều chỉnh vị trí để đối diện
+            scene.add(windowFrame2);
+
+            // Tạo kệ ti vi
+            const chairGeometry = new THREE.BoxGeometry(5.5, 2.2, 1);
+            const chairMaterial = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const chair = new THREE.Mesh(chairGeometry, chairMaterial);
+            chair.position.set(0, -3.2, -4);
+            scene.add(chair);
+            // Tạo bề mặt chính của kệ tivi
+            const shelfGeometry = new THREE.BoxGeometry(0.2, 1, 0.1); // Kích thước của kệ
+            const shelfMaterial = new THREE.MeshPhongMaterial({
+                color: 0xd2b48c, // Màu gỗ
+            });
+            const shelf = new THREE.Mesh(shelfGeometry, shelfMaterial);
+            shelf.position.set(0, -1.8, -4.3); // Vị trí của kệ trong cảnh
+            scene.add(shelf);
+
+            // Tạo cửa tủ tivi
+            const tvDoorGeometry = new THREE.BoxGeometry(0.1, 2, 0.1);
+            const tvDoorMaterial = new THREE.MeshPhongMaterial({
+                color: 0xfff8dc,
+            }); // Màu vàng kem
+            const tvDoor = new THREE.Mesh(tvDoorGeometry, tvDoorMaterial);
+            tvDoor.position.set(-1.2, -3.1, -3.52); // Đặt vị trí của cửa tủ tivi
+            scene.add(tvDoor);
+
+            // Tạo cửa tủ tivi 2
+            const tv1DoorGeometry = new THREE.BoxGeometry(0.1, 2, 0.1);
+            const tv1DoorMaterial = new THREE.MeshPhongMaterial({
+                color: 0xd2b48c,
+            }); // Màu gỗ
+            const tv1Door = new THREE.Mesh(tvDoorGeometry, tvDoorMaterial);
+            tv1Door.position.set(1.2, -3.1, -3.52); // Đặt vị trí của cửa tủ tivi
+            scene.add(tv1Door);
+
+            // Tạo đường chéo cho cửa tủ tivi
+            const tvCrossGeometry = new THREE.BoxGeometry(0.1, 1.8, 0.1);
+            const tvCrossMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            }); // Màu đen
+            const tvCross = new THREE.Mesh(tvCrossGeometry, tvCrossMaterial);
+            tvCross.position.set(-2, -3.1, -3.52); // Đặt vị trí của đường chéo
+            tvCross.rotation.z = Math.PI / 4; // Xoay đường chéo 45 độ
+            scene.add(tvCross);
+
+            // Tạo đường chéo cho cửa tủ tivi 1
+            const tvCrossGeometry1 = new THREE.BoxGeometry(0.1, 1.8, 0.1);
+            const tvCrossMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            }); // Màu đen
+            const tvCross1 = new THREE.Mesh(tvCrossGeometry1, tvCrossMaterial1);
+            tvCross1.position.set(-2, -3.1, -3.52); // Đặt vị trí của đường chéo
+            tvCross1.rotation.z = -Math.PI / 4; // Xoay đường chéo 45 độ
+            scene.add(tvCross1);
+
+            // Tạo đường chéo cho cửa tủ tivi
+            const tvCrossGeometry2 = new THREE.BoxGeometry(0.1, 1.8, 0.1);
+            const tvCrossMaterial2 = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            }); // Màu đen
+            const tvCross2 = new THREE.Mesh(tvCrossGeometry2, tvCrossMaterial2);
+            tvCross2.position.set(2, -3.1, -3.52); // Đặt vị trí của đường chéo
+            tvCross2.rotation.z = Math.PI / 4; // Xoay đường chéo 45 độ
+            scene.add(tvCross2);
+
+            // Tạo đường chéo cho cửa tủ tivi 1
+            const tvCrossGeometry3 = new THREE.BoxGeometry(0.1, 1.8, 0.1);
+            const tvCrossMaterial3 = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            }); // Màu đen
+            const tvCross3 = new THREE.Mesh(tvCrossGeometry3, tvCrossMaterial3);
+            tvCross3.position.set(2, -3.1, -3.52); // Đặt vị trí của đường chéo
+            tvCross3.rotation.z = -Math.PI / 4; // Xoay đường chéo 45 độ
+            scene.add(tvCross3);
+
+            // loa trái
+            const speakerGeometry = new THREE.BoxGeometry(1, 5.2, 0.5);
+            const speakerMaterial = new THREE.MeshPhongMaterial({
+                color: 0x808080,
+            }); // Màu xám
+            const speaker = new THREE.Mesh(speakerGeometry, speakerMaterial);
+            speaker.position.set(-2.25, 0, -4); // Đặt vị trí của loa trái
+            scene.add(speaker);
+
+            // loa phải
+            const speaker1Geometry = new THREE.BoxGeometry(1, 5.2, 0.5);
+            const speaker1Material = new THREE.MeshPhongMaterial({
+                color: 0x808080,
+            }); // Màu xám
+            const speaker1 = new THREE.Mesh(speaker1Geometry, speaker1Material);
+            speaker1.position.set(2.25, 0, -4); // Đặt vị trí của loa phải
+            scene.add(speaker1);
+
+            // Tạo một loader để tải ảnh
+            const loader = new THREE.TextureLoader();
+
+            // Địa chỉ URL của ảnh bạn muốn treo
+            const imageUrl =
+                "https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/440937130_1003463714531757_6656511798550825497_n.jpg?stp=dst-jpg_p100x100&_nc_cat=103&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeFE0pGzg-8q8EmAGGinMhNnkkrdnBWPk3OSSt2cFY-TcwK-KZTW09-7w9Bnbjj4TU-a12sZ4NM_BU3osc4r9Bon&_nc_ohc=U1OGvrz_XaoQ7kNvgFrZFx1&_nc_ht=scontent.fhan14-3.fna&oh=00_AYC9bPUomkFs7-Gr75wMyOFKmBlDIhSiYANWoT3SKM6hLw&oe=6643DCCD";
+
+            const imageUrl1 =
+                "https://scontent.fhan14-4.fna.fbcdn.net/v/t39.30808-6/440403542_1003786874499441_1012129283124025427_n.jpg?stp=dst-jpg_s261x260&_nc_cat=102&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeE-Dp_-Ye7VoSpErZBhoHGu_0d2ws_uSq__R3bCz-5Kr5aOqWm5vGAs9IUWT-WnHsDEAllIC9gLSSts779tjS71&_nc_ohc=Df7c3SMPLDgQ7kNvgHlivbs&_nc_ht=scontent.fhan14-4.fna&oh=00_AYCiDOnj9BvwKOo5tAA6HiNAMQaN7jfNBRb1LpZaLVR3Zg&oe=6643D1AE";
+
+            const imageUrl2 =
+                "https://media.loveitopcdn.com/6424/top-ung-dung-karaoke-fptshop-01.jpg";
+
+            const imageUrl3 =
+                "https://scontent.fhan14-4.fna.fbcdn.net/v/t39.30808-6/438275224_1004054287806033_3177368089676130669_n.jpg?stp=dst-jpg_p75x225&_nc_cat=102&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeGOFA7FVZnrWXuWPTSlErL-eXPwJSd6Z895c_AlJ3pnz5x59B-u-jAMjef_Le2AYUTogbDPuRCunoPVb--QiwLS&_nc_ohc=-DR0gDs0fb4Q7kNvgHJKj_7&_nc_ht=scontent.fhan14-4.fna&oh=00_AYC1pTmwsTYUuk4vc080hf205WqOaWn1wHPMNAdwQspMrw&oe=6643DAAB";
+
+            const imageUrl4 =
+                "https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-6/438256339_1004056131139182_8754546491804890840_n.jpg?stp=dst-jpg_s261x260&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeHP1fTrxPqPFKwkM01llsTH0G7Fm4qTdhXQbsWbipN2FbBKq4PXQ5mUFoKO_WnTdVcWWvVVk7AoHVnVwnnloiM1&_nc_ohc=f5FIim1tDoUQ7kNvgFmIjHH&_nc_ht=scontent.fhan14-5.fna&oh=00_AYBrESob8FGGdfN_bejPEY9dZfNe7PvWVGnZt5t9BYPiaw&oe=6643B869";
+            // Sử dụng loader để tải ảnh
+
+            // loa trái
+            loader.load(
+                imageUrl,
+                function (texture) {
+                    // Khi ảnh đã tải xong, tạo hình học phẳng cho bức ảnh
+                    const imageGeometry = new THREE.PlaneGeometry(1, 4.5); // Kích thước của bức ảnh, có thể điều chỉnh cho phù hợp
+
+                    // Tạo vật liệu với texture là ảnh vừa tải
+                    const imageMaterial = new THREE.MeshBasicMaterial({
+                        map: texture,
+                    });
+
+                    // Tạo mesh với hình học và vật liệu
+                    const image = new THREE.Mesh(imageGeometry, imageMaterial);
+
+                    // Điều chỉnh vị trí của bức ảnh, giả sử treo trên bức tường bên phải
+                    image.position.set(-2.25, 0.25, -3.75); // X = 2 để đặt ảnh cách xa tâm OX, Y và Z điều chỉnh tùy vào vị trí cụ thể
+
+                    // Thêm ảnh vào cảnh
+                    scene.add(image);
+                },
+                undefined,
+                function (error) {
+                    console.error(
+                        "An error occurred while loading the image:",
+                        error
+                    );
+                }
+            );
+
+            // loa phải
+            loader.load(
+                imageUrl,
+                function (texture) {
+                    // Khi ảnh đã tải xong, tạo hình học phẳng cho bức ảnh
+                    const imageGeometry = new THREE.PlaneGeometry(1, 4.5); // Kích thước của bức ảnh, có thể điều chỉnh cho phù hợp
+
+                    // Tạo vật liệu với texture là ảnh vừa tải
+                    const imageMaterial = new THREE.MeshBasicMaterial({
+                        map: texture,
+                    });
+
+                    // Tạo mesh với hình học và vật liệu
+                    const image = new THREE.Mesh(imageGeometry, imageMaterial);
+
+                    // Điều chỉnh vị trí của bức ảnh, giả sử treo trên bức tường bên phải
+                    image.position.set(2.25, 0.25, -3.75); // X = 2 để đặt ảnh cách xa tâm OX, Y và Z điều chỉnh tùy vào vị trí cụ thể
+
+                    // Thêm ảnh vào cảnh
+                    scene.add(image);
+                },
+                undefined,
+                function (error) {
+                    console.error(
+                        "An error occurred while loading the image:",
+                        error
+                    );
+                }
+            );
+
+            // kệ Tivi
+            loader.load(
+                imageUrl1,
+                function (texture) {
+                    // Khi ảnh đã tải xong, tạo hình học phẳng cho bức ảnh
+                    const imageGeometry = new THREE.PlaneGeometry(2.5, 2); // Kích thước của bức ảnh, có thể điều chỉnh cho phù hợp
+
+                    // Tạo vật liệu với texture là ảnh vừa tải
+                    const imageMaterial = new THREE.MeshBasicMaterial({
+                        map: texture,
+                    });
+
+                    // Tạo mesh với hình học và vật liệu
+                    const image = new THREE.Mesh(imageGeometry, imageMaterial);
+
+                    // Điều chỉnh vị trí của bức ảnh, giả sử treo trên bức tường bên phải
+                    image.position.set(0, -3.1, -3.5); // X = 2 để đặt ảnh cách xa tâm OX, Y và Z điều chỉnh tùy vào vị trí cụ thể
+
+                    // Thêm ảnh vào cảnh
+                    scene.add(image);
+                },
+                undefined,
+                function (error) {
+                    console.error(
+                        "An error occurred while loading the image:",
+                        error
+                    );
+                }
+            );
+
+            // Tivi
+            loader.load(
+                imageUrl2,
+                function (texture) {
+                    // Khi ảnh đã tải xong, tạo hình học phẳng cho bức ảnh
+                    const imageGeometry = new THREE.PlaneGeometry(3.5, 4.6); // Kích thước của bức ảnh, có thể điều chỉnh cho phù hợp
+
+                    // Tạo vật liệu với texture là ảnh vừa tải
+                    const imageMaterial = new THREE.MeshBasicMaterial({
+                        map: texture,
+                    });
+
+                    // Tạo mesh với hình học và vật liệu
+                    const image = new THREE.Mesh(imageGeometry, imageMaterial);
+
+                    // Điều chỉnh vị trí của bức ảnh, giả sử treo trên bức tường bên phải
+                    image.position.set(0, 0.3, -4.1); // X = 2 để đặt ảnh cách xa tâm OX, Y và Z điều chỉnh tùy vào vị trí cụ thể
+
+                    // Thêm ảnh vào cảnh
+                    scene.add(image);
+                },
+                undefined,
+                function (error) {
+                    console.error(
+                        "An error occurred while loading the image:",
+                        error
+                    );
+                }
+            );
+            loader.load(
+                imageUrl3,
+                function (texture) {
+                    // Khi ảnh đã tải xong, tạo hình học phẳng cho bức ảnh
+                    const imageGeometry = new THREE.PlaneGeometry(3, 5); // Kích thước của bức ảnh, có thể điều chỉnh cho phù hợp
+
+                    // Tạo vật liệu với texture là ảnh vừa tải
+                    const imageMaterial = new THREE.MeshBasicMaterial({
+                        map: texture,
+                    });
+
+                    // Tạo mesh với hình học và vật liệu
+                    const image = new THREE.Mesh(imageGeometry, imageMaterial);
+
+                    // Điều chỉnh vị trí của bức ảnh, giả sử treo trên bức tường bên phải
+                    image.position.set(-4.3, 0.5, -1.3); // X = 2 để đặt ảnh cách xa tâm OX, Y và Z điều chỉnh tùy vào vị trí cụ thể
+                    image.rotation.y = Math.PI / 2; // Xoay ảnh 90 độ
+                    // Thêm ảnh vào cảnh
+                    scene.add(image);
+                },
+                undefined,
+                function (error) {
+                    console.error(
+                        "An error occurred while loading the image:",
+                        error
+                    );
+                }
+            );
+            loader.load(
+                imageUrl4,
+                function (texture) {
+                    // Khi ảnh đã tải xong, tạo hình học phẳng cho bức ảnh
+                    const imageGeometry = new THREE.PlaneGeometry(3, 5); // Kích thước của bức ảnh, có thể điều chỉnh cho phù hợp
+
+                    // Tạo vật liệu với texture là ảnh vừa tải
+                    const imageMaterial = new THREE.MeshBasicMaterial({
+                        map: texture,
+                    });
+
+                    // Tạo mesh với hình học và vật liệu
+                    const image = new THREE.Mesh(imageGeometry, imageMaterial);
+
+                    // Điều chỉnh vị trí của bức ảnh, giả sử treo trên bức tường bên phải
+                    image.position.set(-4.3, 0.5, 2.3); // X = 2 để đặt ảnh cách xa tâm OX, Y và Z điều chỉnh tùy vào vị trí cụ thể
+                    image.rotation.y = Math.PI / 2; // Xoay ảnh 90 độ
+                    // Thêm ảnh vào cảnh
+                    scene.add(image);
+                },
+                undefined,
+                function (error) {
+                    console.error(
+                        "An error occurred while loading the image:",
+                        error
+                    );
+                }
+            );
+            // Tạo đèn led  trên tường
+            const ledGeometry = new THREE.BoxGeometry(4, 0.5, 0.1);
+            const ledMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            });
+            const led = new THREE.Mesh(ledGeometry, ledMaterial);
+            led.position.set(0, 3.5, -4.5); // Đặt vị trí của đèn led
+            scene.add(led);
+
+            // Tạo lọ hoa
+            const vaseGeometry = new THREE.CylinderGeometry(0.2, 0.2, 2, 32);
+            const vaseMaterial = new THREE.MeshPhongMaterial({
+                color: 0x8b4511,
+            }); // Màu gỗ
+            const vase = new THREE.Mesh(vaseGeometry, vaseMaterial);
+            vase.position.set(-3.6, -3, -3.8); // Đặt vị trí của lọ hoa
+            scene.add(vase);
+
+            // Tạo thân người đàn ông
+            const squareGeometry = new THREE.BoxGeometry(1, 2.2, 1);
+            const squareMaterial = new THREE.MeshPhongMaterial({
+                color: 0xff0000,
+            });
+            const square = new THREE.Mesh(squareGeometry, squareMaterial);
+            square.position.set(3.6, -3, -3.8);
+            scene.add(square);
+
+            // Tạo nón cho đầu người đàn ông
+            const flowerGeometry = new THREE.SphereGeometry(0.6, 32, 32);
+            const flowerMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffd700,
+            });
+            const flower = new THREE.Mesh(flowerGeometry, flowerMaterial);
+            flower.position.set(3.6, -1.3, -3.8);
+            scene.add(flower);
+
+            // Tạo vật liệu lo hoa
+            const lampShadeMaterial = new THREE.MeshPhongMaterial({
+                color: 0x008000, // Màu xanh lá cây
+                shininess: 100, // Độ bóng của vật liệu
+            });
+            const lampShadeGeometry = new THREE.ConeGeometry(0.7, 1.5, 32);
+            const lampShade = new THREE.Mesh(
+                lampShadeGeometry,
+                lampShadeMaterial
+            );
+            lampShade.position.set(-3.6, -1.3, -3.8);
+            scene.add(lampShade);
+
+            // Tạo vật liệu lo hoa 1
+            const lampShadeMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0xff0000, // Màu đỏ
+                shininess: 100, // Độ bóng của vật liệu
+            });
+            const lampShadeGeometry1 = new THREE.ConeGeometry(0.6, 1.5, 32);
+            const lampShade1 = new THREE.Mesh(
+                lampShadeGeometry1,
+                lampShadeMaterial1
+            );
+            lampShade1.position.set(-3.6, -0.5, -3.8);
+            scene.add(lampShade1);
+
+            // Tạo vật liệu lo hoa 2
+            const lampShadeMaterial2 = new THREE.MeshPhongMaterial({
+                color: 0xffd700, // Màu vàng
+                shininess: 100, // Độ bóng của vật liệu
+            });
+            const lampShadeGeometry2 = new THREE.ConeGeometry(0.5, 1.5, 32);
+            const lampShade2 = new THREE.Mesh(
+                lampShadeGeometry2,
+                lampShadeMaterial2
+            );
+            lampShade2.position.set(-3.6, 0.3, -3.8);
+            scene.add(lampShade2);
+
+            // Tạo đầu người đàn ông
+            const lampShadeMaterial3 = new THREE.MeshPhongMaterial({
+                color: 0x008000, // Màu xanh lá cây
+                shininess: 100, // Độ bóng của vật liệu
+            });
+            const lampShadeGeometry3 = new THREE.ConeGeometry(0.7, 1.5, 32);
+            const lampShade3 = new THREE.Mesh(
+                lampShadeGeometry3,
+                lampShadeMaterial3
+            );
+            lampShade3.position.set(3.6, -0.2, -3.8);
+            scene.add(lampShade3);
+
+            // Tạo mũi cho đầu người đàn ông
+            const lampShadeMaterial5 = new THREE.MeshPhongMaterial({
+                color: 0x000000, // Màu đen
+                shininess: 100, // Độ bóng của vật liệu
+            });
+            const lampShadeGeometry5 = new THREE.ConeGeometry(0.15, 0.15, 32);
+            const lampShade5 = new THREE.Mesh(
+                lampShadeGeometry5,
+                lampShadeMaterial5
+            );
+            lampShade5.position.set(3.6, -1.4, -3.2);
+            scene.add(lampShade5);
+
+            // tạo mắt tròn cho đầu người đàn ông
+            const lampShadeMaterial6 = new THREE.MeshPhongMaterial({
+                color: 0x000000, // Màu đen
+                shininess: 100, // Độ bóng của vật liệu
+            });
+            const lampShadeGeometry6 = new THREE.SphereGeometry(0.1, 32, 32);
+            const lampShade6 = new THREE.Mesh(
+                lampShadeGeometry6,
+                lampShadeMaterial6
+            );
+            lampShade6.position.set(3.4, -1.2, -3.2);
+            scene.add(lampShade6);
+
+            // tạo mắt tròn cho đầu người đàn ông
+            const lampShadeMaterial7 = new THREE.MeshPhongMaterial({
+                color: 0x000000, // Màu đen
+                shininess: 100, // Độ bóng của vật liệu
+            });
+            const lampShadeGeometry7 = new THREE.SphereGeometry(0.1, 32, 32);
+            const lampShade7 = new THREE.Mesh(
+                lampShadeGeometry7,
+                lampShadeMaterial7
+            );
+            lampShade7.position.set(3.8, -1.2, -3.2);
+            scene.add(lampShade7);
+
+            // Tạo vật liệu lo hoa 4
+            const lampShadeMaterial4 = new THREE.MeshPhongMaterial({
+                color: 0x800080, // Màu tím
+                shininess: 100, // Độ bóng của vật liệu
+            });
+            const lampShadeGeometry4 = new THREE.ConeGeometry(0.35, 1.2, 32);
+            const lampShade4 = new THREE.Mesh(
+                lampShadeGeometry4,
+                lampShadeMaterial4
+            );
+            lampShade4.position.set(-3.6, 0.8, -3.8);
+            scene.add(lampShade4);
+
+            // Tạo số đồng hồ
+            const clockNumbers = [];
+            const numberMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            });
+            const fontLoader = new THREE.FontLoader();
+
+            fontLoader.load(
+                "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
+                function (font) {
+                    for (let i = 1; i <= 12; i++) {
+                        const numberGeometry = new THREE.TextGeometry(
+                            i.toString(),
+                            {
+                                font: font,
+                                size: 0.2,
+                                height: 0.05,
+                            }
+                        );
+                        const numberMesh = new THREE.Mesh(
+                            numberGeometry,
+                            numberMaterial
+                        );
+                        const angle = (i / 6) * Math.PI; // Chia đồng hồ thành 12 phần
+                        numberMesh.position.x =
+                            Math.sin(angle) * clockRadius * 0.8;
+                        numberMesh.position.y =
+                            Math.cos(angle) * clockRadius * 0.8;
+                        numberMesh.position.z = 0.05; // Đẩy số lên một chút để không chạm vào mặt đồng hồ
+                        clockNumbers.push(numberMesh);
+                        clock.add(numberMesh);
+                    }
+                }
+            );
+
+            // Tạo đồng hồ
+            const clockRadius = 1;
+            const clockGeometry = new THREE.CircleGeometry(clockRadius, 64);
+            const clockMaterial = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            });
+            const clock = new THREE.Mesh(clockGeometry, clockMaterial);
+            clock.position.set(4.4, 2.3, 1); // Đặt đồng hồ ở giữa tường
+            clock.rotation.y = -Math.PI / 2; // Xoay đồng hồ để quay về phía bên phải
+
+            scene.add(clock);
+
+            // Tạo kim giờ
+            const hourHandGeometry = new THREE.BoxGeometry(0.05, 1, 0.05);
+            const hourHandMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            });
+            const hourHand = new THREE.Mesh(hourHandGeometry, hourHandMaterial);
+            hourHand.position.set(0, 0, 0.05); // Đặt kim giờ vào giữa đồng hồ
+            clock.add(hourHand);
+
+            // Tạo kim phút
+            const minuteHandGeometry = new THREE.BoxGeometry(0.05, 1.4, 0.05);
+            const minuteHandMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            });
+            const minuteHand = new THREE.Mesh(
+                minuteHandGeometry,
+                minuteHandMaterial
+            );
+            minuteHand.position.set(0, 0, 0.05); // Đặt kim phút vào giữa đồng hồ
+            clock.add(minuteHand);
+
+            // Tạo kim giây
+            const secondHandGeometry = new THREE.BoxGeometry(0.02, 1.8, 0.02);
+            const secondHandMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            });
+            const secondHand = new THREE.Mesh(
+                secondHandGeometry,
+                secondHandMaterial
+            );
+            secondHand.position.set(0, 0, 0.05); // Đặt kim giây vào giữa đồng hồ
+            clock.add(secondHand);
+
+            // tạo đèn phòng
+            const ceilingLightMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffff00,
+            }); // Màu vàng
+            // Tạo bóng đèn cơ
+            const pointLight = new THREE.PointLight(0xffff00, 1, 15); // Màu vàng, cường độ 1, bán kính tác động 10
+            pointLight.position.set(0, 4, 0); // Đặt bóng đèn ở vị trí đèn trùm
+            scene.add(pointLight);
+
+            // Tạo bàn uống nước
+            const tableGeometry = new THREE.BoxGeometry(3, 0.5, 3);
+            const tableMaterial = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const table = new THREE.Mesh(tableGeometry, tableMaterial);
+            table.position.set(0, -3, 1.5); // Đặt vị trí của bàn uống nước
+            scene.add(table);
+
+            // Tạo chân bàn
+            const legGeometry = new THREE.BoxGeometry(0.4, 1, 0.4);
+            const legMaterial = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg1 = new THREE.Mesh(legGeometry, legMaterial);
+            leg1.position.set(-1.1, -3.5, 0.5); // Đặt vị trí của chân bàn
+            scene.add(leg1);
+
+            // Tạo chân bàn 1
+            const legGeometry1 = new THREE.BoxGeometry(0.4, 1, 0.4);
+            const legMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg2 = new THREE.Mesh(legGeometry1, legMaterial1);
+            leg2.position.set(1.1, -3.5, 0.5); // Đặt vị trí của chân bàn
+            scene.add(leg2);
+
+            // Tạo chân bàn 2
+            const legGeometry2 = new THREE.BoxGeometry(0.4, 1, 0.4);
+            const legMaterial2 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg3 = new THREE.Mesh(legGeometry2, legMaterial2);
+            leg3.position.set(-1.1, -3.5, 2.5); // Đặt vị trí của chân bàn
+            scene.add(leg3);
+
+            // Tạo chân bàn 3
+            const legGeometry3 = new THREE.BoxGeometry(0.4, 1, 0.4);
+            const legMaterial3 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg4 = new THREE.Mesh(legGeometry3, legMaterial3);
+            leg4.position.set(1.1, -3.5, 2.5); // Đặt vị trí của chân bàn
+            scene.add(leg4);
+
+            // Tạo ghế trái
+            const chairGeometry1 = new THREE.BoxGeometry(0.8, 0.2, 3);
+            const chairMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const chair1 = new THREE.Mesh(chairGeometry1, chairMaterial1);
+            chair1.position.set(-2.5, -3.5, 1.5); // Đặt vị trí của ghế
+            scene.add(chair1);
+
+            // Tạo chân ghế
+            const legGeometry4 = new THREE.BoxGeometry(0.2, 0.7, 0.2);
+            const legMaterial4 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg5 = new THREE.Mesh(legGeometry4, legMaterial4);
+            leg5.position.set(-2.8, -3.8, 0.5); // Đặt vị trí của chân ghế
+            scene.add(leg5);
+
+            // Tạo chân ghế 1
+            const legGeometry5 = new THREE.BoxGeometry(0.2, 0.7, 0.2);
+            const legMaterial5 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg6 = new THREE.Mesh(legGeometry5, legMaterial5);
+            leg6.position.set(-2.8, -3.8, 2.7); // Đặt vị trí của chân ghế
+            scene.add(leg6);
+
+            // Tạo chân ghế 2
+            const legGeometry6 = new THREE.BoxGeometry(0.2, 0.7, 0.2);
+            const legMaterial6 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg7 = new THREE.Mesh(legGeometry6, legMaterial6);
+            leg7.position.set(-2.2, -3.8, 0.5); // Đặt vị trí của chân ghế
+            scene.add(leg7);
+
+            // Tạo chân ghế 3
+            const legGeometry7 = new THREE.BoxGeometry(0.2, 0.7, 0.2);
+            const legMaterial7 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg8 = new THREE.Mesh(legGeometry7, legMaterial7);
+            leg8.position.set(-2.2, -3.8, 2.7); // Đặt vị trí của chân ghế
+            scene.add(leg8);
+
+            // Tạo tưa ghế
+            const backGeometry = new THREE.BoxGeometry(0.8, 0.8, 0.1);
+            const backMaterial = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const back = new THREE.Mesh(backGeometry, backMaterial);
+            back.position.set(-2.5, -3.2, 0); // Đặt vị trí của tựa ghế
+            scene.add(back);
+
+            // Tạo tưa ghế 1
+            const backGeometry1 = new THREE.BoxGeometry(0.8, 0.8, 0.1);
+            const backMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const back1 = new THREE.Mesh(backGeometry1, backMaterial1);
+            back1.position.set(-2.5, -3.2, 3); // Đặt vị trí của tựa ghế
+            scene.add(back1);
+
+            // Tạo Tựa lưng ghế
+            const backGeometry2 = new THREE.BoxGeometry(0.1, 1.5, 3.1);
+            const backMaterial2 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const back2 = new THREE.Mesh(backGeometry2, backMaterial2);
+            back2.position.set(-2.85, -2.85, 1.5); // Đặt vị trí của tựa lưng ghế
+            scene.add(back2);
+
+            // Tạo đệm ghế
+            const cushionGeometry1 = new THREE.BoxGeometry(0.8, 0.2, 3);
+            const cushionMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0xff0000,
+            }); // Màu đỏ
+            const cushion1 = new THREE.Mesh(cushionGeometry1, cushionMaterial1);
+            cushion1.position.set(2.5, -3.3, 1.5); // Đặt vị trí của đệm ghế
+            scene.add(cushion1);
+
+            // Tạo ghế phải
+            const chairGeometry2 = new THREE.BoxGeometry(0.8, 0.2, 3);
+            const chairMaterial2 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const chair2 = new THREE.Mesh(chairGeometry2, chairMaterial2);
+            chair2.position.set(2.5, -3.5, 1.5); // Đặt vị trí của ghế
+            scene.add(chair2);
+
+            // Tạo chân ghế
+            const legGeometry8 = new THREE.BoxGeometry(0.2, 0.7, 0.2);
+            const legMaterial8 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg9 = new THREE.Mesh(legGeometry8, legMaterial8);
+            leg9.position.set(2.8, -3.8, 0.5); // Đặt vị trí của chân ghế
+            scene.add(leg9);
+
+            // Tạo chân ghế 1
+            const legGeometry10 = new THREE.BoxGeometry(0.2, 0.7, 0.2);
+            const legMaterial10 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg10 = new THREE.Mesh(legGeometry10, legMaterial10);
+            leg10.position.set(2.8, -3.8, 2.7); // Đặt vị trí của chân ghế
+            scene.add(leg10);
+
+            // Tạo chân ghế 2
+            const legGeometry11 = new THREE.BoxGeometry(0.2, 0.7, 0.2);
+            const legMaterial11 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg11 = new THREE.Mesh(legGeometry11, legMaterial11);
+            leg11.position.set(2.2, -3.8, 0.5); // Đặt vị trí của chân ghế
+            scene.add(leg11);
+
+            // Tạo chân ghế 3
+            const legGeometry12 = new THREE.BoxGeometry(0.2, 0.7, 0.2);
+            const legMaterial12 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const leg12 = new THREE.Mesh(legGeometry12, legMaterial12);
+            leg12.position.set(2.2, -3.8, 2.7); // Đặt vị trí của chân ghế
+            scene.add(leg12);
+
+            // Tạo tưa ghế
+            const backGeometry3 = new THREE.BoxGeometry(0.8, 0.8, 0.1);
+            const backMaterial3 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const back3 = new THREE.Mesh(backGeometry3, backMaterial3);
+            back3.position.set(2.5, -3.2, 0); // Đặt vị trí của tựa ghế
+            scene.add(back3);
+
+            // Tạo tưa ghế 1
+            const backGeometry4 = new THREE.BoxGeometry(0.8, 0.8, 0.1);
+            const backMaterial4 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const back4 = new THREE.Mesh(backGeometry4, backMaterial4);
+            back4.position.set(2.5, -3.2, 3); // Đặt vị trí của tựa ghế
+            scene.add(back4);
+
+            // Tạo Tựa lưng ghế
+            const backGeometry5 = new THREE.BoxGeometry(0.1, 1.5, 3.1);
+            const backMaterial5 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            }); // Màu gỗ
+            const back5 = new THREE.Mesh(backGeometry5, backMaterial5);
+            back5.position.set(2.85, -2.85, 1.5); // Đặt vị trí của tựa lưng ghế
+            scene.add(back5);
+
+            // Tạo đệm ghế
+            const cushionGeometry = new THREE.BoxGeometry(0.8, 0.2, 3);
+            const cushionMaterial = new THREE.MeshPhongMaterial({
+                color: 0xff0000,
+            }); // Màu đỏ
+            const cushion = new THREE.Mesh(cushionGeometry, cushionMaterial);
+            cushion.position.set(-2.5, -3.3, 1.5); // Đặt vị trí của đệm ghế
+            scene.add(cushion);
+
+            // Tạo thân thùng rác
+            const binBodyGeometry = new THREE.CylinderGeometry(0.3, 0.2, 1, 32);
+            const binMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffa500,
+            }); // Màu sắc cho thùng rác
+            const binBody = new THREE.Mesh(binBodyGeometry, binMaterial);
+            binBody.position.set(0, -3.5, 4); // Đặt vị trí của thân thùng rác
+            scene.add(binBody);
+
+            // Tạo nắp thùng rác
+            const lidGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.1, 32);
+            const lidMaterial = new THREE.MeshBasicMaterial({
+                color: 0x606060,
+            }); // Màu sắc cho nắp, thường đậm hơn một chút
+            const lid = new THREE.Mesh(lidGeometry, lidMaterial);
+            lid.position.set(0, -3, 4); // Đặt vị trí của nắp trên cùng thùng rác
+            scene.add(lid);
+
+            // Tạo tay cầm cho nắp (tùy chọn)
+            const handleGeomet = new THREE.TorusGeometry(
+                0.1,
+                0.02,
+                16,
+                100,
+                Math.PI
+            );
+            const handleMateri = new THREE.MeshBasicMaterial({
+                color: 0xff0000,
+            });
+            const handle = new THREE.Mesh(handleGeomet, handleMateri);
+            handle.position.set(0, -2.9, 4); // Đặt vị trí của tay cầm trên nắp
+            handle.rotation.x = Math.PI / 2; // Quay tay cầm để phù hợp
+            scene.add(handle);
+
+            // Tạo cửa phòng
+            const doorGeometry = new THREE.BoxGeometry(0.1, 6.5, 1.5);
+            const doorMaterial = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            });
+            const doorMesh = new THREE.Mesh(doorGeometry, doorMaterial);
+            doorMesh.position.set(4.4, -0.7, 3.5); // Đặt cửa gỗ ở giữa phòng, phía trước
+            scene.add(doorMesh);
+
+            // Tạo tay nắm cửa màu vàng
+            const handleGeometry = new THREE.CylinderGeometry(
+                0.05,
+                0.05,
+                1,
+                32
+            );
+            const handleMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffff00,
+            });
+            const handleMesh = new THREE.Mesh(handleGeometry, handleMaterial);
+            handleMesh.position.set(4.35, -0.7, 3); // Đặt tay nắm cửa ở giữa cửa
+            scene.add(handleMesh);
+
+            // Tạo điều hòa
+            const airConditionerGeometry = new THREE.BoxGeometry(0.5, 1.3, 2);
+            const airConditionerMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            });
+            const airConditioner = new THREE.Mesh(
+                airConditionerGeometry,
+                airConditionerMaterial
+            );
+            airConditioner.position.set(4.3, 3, -2); // Đặt điều hòa ở trên cùng tường, phía trước
+            scene.add(airConditioner);
+
+            // Tạo quat trần
+            const ceilingFanGeometry = new THREE.CylinderGeometry(
+                0.1,
+                0.1,
+                1,
+                32
+            );
+            const ceilingFanMaterial = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            });
+            const ceilingFan = new THREE.Mesh(
+                ceilingFanGeometry,
+                ceilingFanMaterial
+            );
+            ceilingFan.position.set(0, 4, 0); // Đặt quat trần ở trung tâm phòng
+            scene.add(ceilingFan);
+
+            // Tạo cánh quat trần
+            const bladeGeometry = new THREE.BoxGeometry(0.04, 0.5, 2);
+            const bladeMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffd700,
+            });
+            const blade1 = new THREE.Mesh(bladeGeometry, bladeMaterial);
+            blade1.position.set(0, 3, 0); // Đặt cánh quat trần ở trung tâm phòng
+            blade1.rotation.y = Math.PI / 2; // Xoay cánh quat trần theo chiều kim đồng hồ
+            blade1.rotation.z = (Math.PI / 180) * 120; // Xoay cánh quat trần 120 độ
+            scene.add(blade1);
+
+            // Tạo cánh quat trần 1
+            const bladeGeometry1 = new THREE.BoxGeometry(0.04, 0.5, 2);
+            const bladeMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0xffd700, // Màu vàng
+            });
+            const blade2 = new THREE.Mesh(bladeGeometry1, bladeMaterial1);
+            blade2.position.set(0, 3, 0); // Đặt cánh quat trần ở trung tâm phòng
+
+            blade2.rotation.z = (Math.PI / 180) * 120; // Xoay cánh quat trần 120 độ
+            scene.add(blade2);
+
+            // tạo trục cánh quat trần
+            const fanAxisGeometry = new THREE.CylinderGeometry(
+                0.05,
+                0.05,
+                0.7,
+                32
+            );
+            const fanAxisMaterial = new THREE.MeshPhongMaterial({
+                color: 0x000000,
+            });
+            const fanAxis = new THREE.Mesh(fanAxisGeometry, fanAxisMaterial);
+            fanAxis.position.set(0, 3.15, 0); // Đặt trục cánh quat trần ở trung tâm phòng
+            scene.add(fanAxis);
+
+            // Tạo cửa sổ nhôm
+            const aluminumWindowGeometry = new THREE.BoxGeometry(0.1, 3, 1.5);
+            const aluminumWindowMaterial = new THREE.MeshPhongMaterial({
+                color: 0xc0c0c0,
+            }); // Màu nhôm
+            const aluminumWindowMesh = new THREE.Mesh(
+                aluminumWindowGeometry,
+                aluminumWindowMaterial
+            );
+            aluminumWindowMesh.position.set(4.5, 0, -1); // Đặt cửa sổ nhôm ở cùng vị trí với cửa gỗ, phía trên
+            scene.add(aluminumWindowMesh);
+
+            // Tạo tay nắm cửa nhôm
+            const aluminumHandleGeometry = new THREE.CylinderGeometry(
+                0.05,
+                0.05,
+                1,
+                32
+            );
+            const aluminumHandleMaterial = new THREE.MeshPhongMaterial({
+                color: 0x000000,
+            }); // Màu đen
+            const aluminumHandleMesh = new THREE.Mesh(
+                aluminumHandleGeometry,
+                aluminumHandleMaterial
+            );
+            aluminumHandleMesh.position.set(4.45, 0, -1.5); // Đặt tay nắm cửa nhôm ở giữa cửa
+            scene.add(aluminumHandleMesh);
+
+            // Tạo đèn led trên trần
+            const ceilingLightGeometry = new THREE.BoxGeometry(1, 0.1, 1);
+            const ceilingLightMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            });
+            const ceilingLight = new THREE.Mesh(
+                ceilingLightGeometry,
+                ceilingLightMaterial1
+            );
+            ceilingLight.position.set(-3, 4, 3); // Đặt đèn led ở trung tâm trần
+            scene.add(ceilingLight);
+
+            // Tạo đèn led trên trần 1
+            const ceilingLightGeometry2 = new THREE.BoxGeometry(1, 0.1, 1);
+            const ceilingLightMaterial2 = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            });
+            const ceilingLight2 = new THREE.Mesh(
+                ceilingLightGeometry2,
+                ceilingLightMaterial2
+            );
+            ceilingLight2.position.set(-3, 4, -3); // Đặt đèn led ở trung tâm trần
+            scene.add(ceilingLight2);
+
+            // Tạo đèn led trên trần 2
+            const ceilingLightGeometry3 = new THREE.BoxGeometry(1, 0.1, 1);
+            const ceilingLightMaterial3 = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            });
+            const ceilingLight3 = new THREE.Mesh(
+                ceilingLightGeometry3,
+                ceilingLightMaterial3
+            );
+            ceilingLight3.position.set(3, 4, -3); // Đặt đèn led ở trung tâm trần
+            scene.add(ceilingLight3);
+
+            // Tạo đèn led trên trần 3
+            const ceilingLightGeometry4 = new THREE.BoxGeometry(1, 0.1, 1);
+            const ceilingLightMaterial4 = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            });
+            const ceilingLight4 = new THREE.Mesh(
+                ceilingLightGeometry4,
+                ceilingLightMaterial4
+            );
+            ceilingLight4.position.set(3, 4, 3); // Đặt đèn led ở trung tâm trần
+            scene.add(ceilingLight4);
+
+            // Tạo tranh treo tường
+            const paintingGeometry = new THREE.BoxGeometry(0.3, 5, 3);
+            const paintingMaterial = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            });
+            const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
+            painting.position.set(-4.5, 0.5, -1.3); // Đặt tranh ở trung tâm tường
+            scene.add(painting);
+
+            // Tạo tranh treo tường 1
+            const paintingGeometry1 = new THREE.BoxGeometry(0.3, 5, 3);
+            const paintingMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0x8b4513,
+            });
+            const painting1 = new THREE.Mesh(
+                paintingGeometry,
+                paintingMaterial
+            );
+            painting1.position.set(-4.5, 0.5, 2.2); // Đặt tranh ở trung tâm tường
+            scene.add(painting1);
+
+            // Tạo máy tính xách tay
+            const laptopWidth = 0.8;
+            const laptopHeight = 0.05;
+            const laptopDepth = 0.5;
+
+            const laptopGeometry = new THREE.BoxGeometry(
+                laptopWidth,
+                laptopHeight,
+                laptopDepth
+            );
+            const laptopMaterial = new THREE.MeshPhongMaterial({
+                color: 0x808080,
+            }); // Màu xám
+            const laptop = new THREE.Mesh(laptopGeometry, laptopMaterial);
+            laptop.position.set(-1, -2.7, 2.5); // Đặt máy tính xách tay trên bàn
+            scene.add(laptop);
+
+            // Tạo máy tính xách tay 1
+            const laptopGeometry1 = new THREE.BoxGeometry(
+                laptopWidth,
+                laptopHeight,
+                laptopDepth
+            );
+            const laptopMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0x808080,
+            }); // Màu xám
+            const laptop1 = new THREE.Mesh(laptopGeometry1, laptopMaterial1);
+            laptop1.position.set(1, -2.7, 2.5); // Đặt máy tính xách tay trên bàn
+            scene.add(laptop1);
+
+            // Tạo hộp đựng tàn thuốc
+            const cupGeometry = new THREE.CylinderGeometry(0.2, 0.2, 0.5, 32);
+            const cupMaterial = new THREE.MeshPhongMaterial({
+                color: 0x0000ff,
+            }); // Màu xanh dương
+            const cup = new THREE.Mesh(cupGeometry, cupMaterial);
+            cup.position.set(0, -2.5, 2.5); // Đặt cốc nước trên bàn
+            scene.add(cup);
+
+            // Tạo Cốc nước
+            const cupGeometry1 = new THREE.CylinderGeometry(0.2, 0.1, 0.8, 32);
+            const cupMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0xffa500,
+            }); // Màu cam
+            const cup1 = new THREE.Mesh(cupGeometry1, cupMaterial1);
+            cup1.position.set(-1, -2.4, 1.5); // Đặt cốc nước trên bàn
+            scene.add(cup1);
+
+            // Tạo ống hút
+            const strawGeometry = new THREE.CylinderGeometry(
+                0.02,
+                0.02,
+                0.5,
+                32
+            );
+            const strawMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            }); // Màu đen
+            const straw = new THREE.Mesh(strawGeometry, strawMaterial);
+            straw.position.set(-1, -2, 1.5); // Đặt ống hút vào cốc nước
+            scene.add(straw);
+
+            // Tạo cốc nước 1
+            const cupGeometry2 = new THREE.CylinderGeometry(0.2, 0.1, 0.8, 32);
+            const cupMaterial2 = new THREE.MeshPhongMaterial({
+                color: 0xffa500,
+            }); // Màu cam
+            const cup2 = new THREE.Mesh(cupGeometry2, cupMaterial2);
+            cup2.position.set(1, -2.4, 1.5); // Đặt cốc nước trên bàn
+            scene.add(cup2);
+
+            // Tạo ống hút 1
+            const strawGeometry1 = new THREE.CylinderGeometry(
+                0.02,
+                0.02,
+                0.5,
+                32
+            );
+            const strawMaterial1 = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+            }); // Màu đen
+            const straw1 = new THREE.Mesh(strawGeometry1, strawMaterial1);
+            straw1.position.set(1, -2, 1.5); // Đặt ống hút vào cốc nước
+            scene.add(straw1);
+
+            // Tạo đầu
+            const headGeometry = new THREE.SphereGeometry(0.25, 25, 10); // Kích thước nhỏ hơn
+            const headMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffdbac,
+            }); // Màu da
+            const head = new THREE.Mesh(headGeometry, headMaterial);
+            head.position.set(3.5, -1.5, 3.6); // Điều chỉnh vị trí cho phù hợp
+            scene.add(head);
+
+            // Tạo cơ thể
+            const bodyGeometry = new THREE.CylinderGeometry(0.25, 0.25, 1, 32); // Kích thước nhỏ hơn
+            const bodyMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+            }); // Màu áo
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.set(3.5, -2.3, 3.6); // Điều chỉnh vị trí cho phù hợp
+            scene.add(body);
+
+            // Tạo tay trái
+            const leftArmGeometry = new THREE.CylinderGeometry(
+                0.05,
+                0.05,
+                0.5,
+                32
+            );
+            const leftArmMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffdbac,
+            }); // Màu da
+            const leftArm = new THREE.Mesh(leftArmGeometry, leftArmMaterial);
+            leftArm.position.set(3.5, -2.3, 3.9); // Điều chỉnh vị trí cho phù hợp
+            scene.add(leftArm);
+
+            // Tạo tay phải
+            const rightArmGeometry = new THREE.CylinderGeometry(
+                0.08,
+                0.08,
+                0.6,
+                32
+            );
+            const rightArmMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffdbac,
+            }); // Màu da
+            const rightArm = new THREE.Mesh(rightArmGeometry, rightArmMaterial);
+            rightArm.position.set(3.5, -2.3, 3.3); // Điều chỉnh vị trí cho phù hợp
+            rightArm.rotation.z = Math.PI / 2; // Xoay tay phải để phù hợp
+            scene.add(rightArm);
+
+            // Tạo chân trái
+            const leftLegGeometry = new THREE.CylinderGeometry(
+                0.07,
+                0.07,
+                1,
+                32
+            );
+            const leftLegMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffdbac,
+            }); // Màu da
+            const leftLeg = new THREE.Mesh(leftLegGeometry, leftLegMaterial);
+            leftLeg.position.set(3.5, -3.3, 3.45); // Điều chỉnh vị trí cho phù hợp
+            scene.add(leftLeg);
+
+            // Tạo chân phải
+            const rightLegGeometry = new THREE.CylinderGeometry(
+                0.07,
+                0.07,
+                1,
+                32
+            );
+            const rightLegMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffdbac,
+            }); // Màu da
+            const rightLeg = new THREE.Mesh(rightLegGeometry, rightLegMaterial);
+            rightLeg.position.set(3.6, -3.3, 3.6); // Điều chỉnh vị trí cho phù hợp
+            scene.add(rightLeg);
+
+            // Tạo tóc
+            const hairGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+            const hairMaterial = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+            }); // Màu đen
+            const hair = new THREE.Mesh(hairGeometry, hairMaterial);
+            hair.position.set(3.5, -1.2, 3.6); // Điều chỉnh vị trí cho phù hợp
+            scene.add(hair);
+
+            // Tạo mắt trái
+            const leftEyeGeometry = new THREE.SphereGeometry(0.05, 25, 10);
+            const leftEyeMaterial = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+            }); // Màu đen
+            const leftEye = new THREE.Mesh(leftEyeGeometry, leftEyeMaterial);
+            leftEye.position.set(3.3, -1.5, 3.7); // Điều chỉnh vị trí cho phù hợp
+            scene.add(leftEye);
+
+            // Tạo mắt phải
+            const rightEyeGeometry = new THREE.SphereGeometry(0.05, 25, 10);
+            const rightEyeMaterial = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+            }); // Màu đen
+            const rightEye = new THREE.Mesh(rightEyeGeometry, rightEyeMaterial);
+            rightEye.position.set(3.25, -1.5, 3.6); // Điều chỉnh vị trí cho phù hợp
+            scene.add(rightEye);
+
+            // Tạo miệng
+            const mouthGeometry = new THREE.BoxGeometry(0.1, 0.05, 0.05);
+            const mouthMaterial = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+            }); // Màu đen
+            const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+            mouth.position.set(3.3, -1.6, 3.6); // Điều chỉnh vị trí cho phù hợp
+            scene.add(mouth);
+
+            // Tạo một video HTML và thêm vào trang web của bạn
+            const video = document.createElement("video");
+            video.src = "kha.mp4"; // Đường dẫn đến video của bạn
+            video.autoplay = true;
+            video.loop = true; // Lặp video
+            video.muted = true; // Tắt tiếng
+
+            // Tạo texture từ video sử dụng THREE.VideoTexture
+            const videoTexture = new THREE.VideoTexture(video);
+            const videoMaterial = new THREE.MeshBasicMaterial({
+                map: videoTexture,
+            });
+            const videoGeometry = new THREE.PlaneGeometry(3.5, 4.6); // Kích thước của video
+            // Tạo mesh sử dụng vật liệu và hình dạng
+            const videoMesh = new THREE.Mesh(videoGeometry, videoMaterial);
+            videoMesh.position.set(0, 0.3, -4);
+            videoMesh.visible = false; // Ẩn video ban đầu
+            scene.add(videoMesh);
+
+            // Xử lý sự kiện bấm phím để bật tắt video
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "v") {
+                    if (video.paused) {
+                        video.muted = false; // Tắt tiếng
+                        video.play();
+                    } else {
+                        video.pause();
+                    }
+                    c;
+                }
+                v;
+            });
+
+            // Xử lý sự kiện bấm phím để video xuất hiện trên màn hình
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "c") {
+                    videoMesh.visible = !videoMesh.visible;
+                }
+            });
+
+            // Xử lý sự kiện bấm phím để bật tắt đèn trần độ chiếu sáng trong phòng
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "l") {
+                    isCeilingLightOn = !isCeilingLightOn;
+
+                    // Thay đổi cường độ sáng của ánh sáng trần
+                    ceilingLight.intensity = isCeilingLightOn ? 1 : 0;
+
+                    // Thay đổi cường độ sáng của ánh sáng môi trường
+                    ambientLight.intensity = isCeilingLightOn ? 0.7 : 0;
+
+                    // Thay đổi cường độ sáng của ánh sáng hướng
+                    directionalLight.intensity = isCeilingLightOn ? 0.3 : 0;
+                }
+            });
+
+            // Biến để lưu trạng thái đèn trần
+            let isCeilingLightOn = false;
+
+            // Xử lý sự kiện bật quay quạt trần
+            let isCeilingFanOn = false;
+            let fanRotationSpeed = 0.2; // Tốc độ quay của quạt trần
+
+            function rotateCeilingFan() {
+                if (isCeilingFanOn) {
+                    // Cập nhật góc quay của cánh quạt
+                    blade1.rotation.y += fanRotationSpeed;
+                    blade2.rotation.y += fanRotationSpeed;
+
+                    // Gọi hàm rotateCeilingFan lần nữa để tạo vòng lặp
+                    requestAnimationFrame(rotateCeilingFan);
+                }
+            }
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "f") {
+                    isCeilingFanOn = !isCeilingFanOn;
+
+                    if (isCeilingFanOn) {
+                        // Bắt đầu quay quạt trần
+                        rotateCeilingFan();
+                        f;
+                    }
+                }
+            });
+
+            // Biến để lưu trạng thái nhấp nháy của đèn trần
+            let isCeilingLightBlinking = false;
+            let ceilingLightBlinkInterval = null;
+            let colors = [0xffffff, 0xff0000, 0xffff00]; // Màu trắng, màu đỏ, màu vàng
+            let currentColorIndex = 0;
+
+            function blinkCeilingLights() {
+                if (isCeilingLightBlinking) {
+                    // Thay đổi màu sắc của đèn trần
+                    let color = colors[currentColorIndex];
+                    ceilingLight.material.color.set(color);
+                    ceilingLight2.material.color.set(color);
+                    ceilingLight3.material.color.set(color);
+                    ceilingLight4.material.color.set(color);
+
+                    // Di chuyển đến màu sắc tiếp theo
+                    currentColorIndex = (currentColorIndex + 1) % colors.length;
+
+                    // Gọi hàm blinkCeilingLights lần nữa sau một khoảng thời gian
+                    ceilingLightBlinkInterval = setTimeout(
+                        blinkCeilingLights,
+                        500
+                    );
+                }
+            }
+
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "b") {
+                    isCeilingLightBlinking = !isCeilingLightBlinking;
+
+                    if (isCeilingLightBlinking) {
+                        // Bắt đầu nhấp nháy đèn trần
+                        blinkCeilingLights();
+                    } else {
+                        // Dừng nhấp nháy đèn trần
+                        clearTimeout(ceilingLightBlinkInterval);
+
+                        // Đặt trạng thái bật/tắt của đèn trần về trạng thái ban đầu
+                        ceilingLight.material.color.set(0xffffff); // Màu trắng
+                        ceilingLight2.material.color.set(0xffffff); // Màu trắng
+                        ceilingLight3.material.color.set(0xffffff); // Màu trắng
+                        ceilingLight4.material.color.set(0xffffff); // Màu trắng
+                    }
+                }
+            });
+
+            // Lắng nghe sự kiện cuộn chuột (zoom)
+            document.addEventListener("wheel", (event) => {
+                camera.position.z += event.deltaY * 0.01;
+            });
+
+            // Lưu trữ vị trí chuột trước đó
+            let mouseX = 0;
+            let mouseY = 0;
+
+            // Biến để kiểm tra xem phím Ctrl đã được ấn hay không
+            let ctrlPressed = false;
+
+            // Lắng nghe sự kiện keydown để kiểm tra khi nào phím Ctrl được ấn
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "Control") {
+                    ctrlPressed = true;
+                }
+            });
+
+            // Lắng nghe sự kiện keyup để kiểm tra khi nào phím Ctrl được thả ra
+            document.addEventListener("keyup", (event) => {
+                if (event.key === "Control") {
+                    ctrlPressed = false;
+                }
+            });
+
+            // Lắng nghe sự kiện chuột di chuyển (pan)
+            document.addEventListener("mousemove", (event) => {
+                if (event.buttons === 1) {
+                    const deltaX = event.clientX - mouseX;
+                    const deltaY = event.clientY - mouseY;
+
+                    // Tính toán góc quay mới của camera theo chiều y (quay ngang)
+                    const angleX = ((deltaX * Math.PI) / window.innerWidth) * 2;
+                    const angleY =
+                        ((deltaY * Math.PI) / window.innerHeight) * 2;
+
+                    // Di chuyển camera theo chiều x và y, hoặc quay ngược lại nếu Ctrl được ấn
+                    if (ctrlPressed) {
+                        camera.rotation.y += angleX;
+                        camera.rotation.x += angleY;
+                    } else {
+                        camera.position.x -= deltaX * 0.02;
+                        camera.position.y += deltaY * 0.02;
+                    }
+
+                    // Đảm bảo camera không di chuyển quá xa hoặc quá gần
+                    camera.position.x = Math.min(
+                        Math.max(camera.position.x, -10),
+                        10
+                    );
+                    camera.position.y = Math.min(
+                        Math.max(camera.position.y, -10),
+                        10
+                    );
+
+                    // Tính toán vị trí mới của camera theo chiều z
+                    const distance = camera.position.distanceTo(scene.position);
+                    const factor = 0.05; // Hệ số tốc độ di chuyển
+                    camera.position.z += deltaY * factor * (distance / 50);
+                }
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+            });
+
+            // Render loop
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+
+                // Lấy thời gian hiện tại
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const seconds = now.getSeconds();
+
+                // Quay kim giờ, kim phút và kim giây
+                hourHand.rotation.z =
+                    ((hours % 12) + minutes / 60) * (Math.PI / 6);
+                minuteHand.rotation.z =
+                    (minutes + seconds / 60) * (Math.PI / 30);
+                secondHand.rotation.z = seconds * (Math.PI / 30);
+            }
+
+            animate();
+        </script>
+    </body>
+</html>
